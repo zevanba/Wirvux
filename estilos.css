@@ -909,6 +909,8 @@ body.dark-mode .text-center {
     margin-bottom: 30px;
 }
 
+
+
 .ficha-header h2 {
     font-size: 1.8rem;
     margin: 15px 0;
@@ -945,6 +947,34 @@ body.dark-mode .text-center {
 }
 .badge-estado.abierto { background: #dcfce7; color: #166534; }
 .badge-estado.en_progreso { background: #dbeafe; color: #1e40af; }
+
+/* Adaptación para Modo Oscuro */
+.dark-mode .badge-estado {
+    background-color: #2a2a2a; /* Fondo gris oscuro neutro por defecto */
+    color: #e0e0e0;            /* Texto casi blanco */
+    border: 1px solid #444;    /* Un borde sutil para que no se pierda en el fondo */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Si tienes estados específicos (ejemplos comunes): */
+
+.dark-mode .badge-estado.abierto {
+    background-color: rgba(40, 167, 69, 0.2); /* Verde traslúcido */
+    color: #4cd964;                          /* Verde brillante */
+    border-color: #28a745;
+}
+
+.dark-mode .badge-estado.en_progreso {
+    background-color: rgba(255, 193, 7, 0.15); /* Ámbar traslúcido */
+    color: #ffca28;                            /* Amarillo vivo */
+    border-color: #ffc107;
+}
+
+.dark-mode .badge-estado.finalizado {
+    background-color: rgba(0, 123, 255, 0.2); /* Azul traslúcido */
+    color: #4dabff;                           /* Azul claro */
+    border-color: #007bff;
+}
 
 /* Propuestas */
 .tarjeta-propuesta {
@@ -2148,3 +2178,4 @@ body.dark-mode .dropdown-content a {
 body.dark-mode .dropdown-content a:hover {
     background-color: #334155;
 }
+

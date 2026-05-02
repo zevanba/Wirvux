@@ -51,6 +51,9 @@ $res_recientes = mysqli_query($conexion, $query_recientes);
                 <a href="index.php" data-key="nav_start">Inicio</a>
                 <a href="mis_pagos.php" data-key="nav_payments">Mis Gastos</a>
                 <a href="mensajes.php" data-key="nav_chats">Mis Chats</a>
+                <a href="profesionales.php" class="btn-primary">
+                <i class="fas fa-search"></i> Buscar Profesionales
+                </a>
                 
                 <div class="lang-dropdown">
                     <button id="lang-toggle" class="theme-switch">

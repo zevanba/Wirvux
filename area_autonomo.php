@@ -89,6 +89,14 @@ $res_lista = mysqli_query($conexion, $query_lista);
                 <button id="theme-toggle" class="theme-switch">
                     <span id="theme-icon">🌙</span> <span id="theme-text">Modo Oscuro</span>
                 </button>
+
+                <a href="mensajes.php" class="btn-chats">
+                <i class="fas fa-envelope"></i> Mis Mensajes
+                </a>
+
+                <a href="perfil_autonomo.php?id=<?php echo $_SESSION['usuario_id']; ?>" class="btn-chats">
+                Mi perfil
+                </a>
                 
                 <a href="logout.php" class="btn-logout" data-key="nav_logout" onclick="resetConfig()">Cerrar Sesión</a>
             </div>
@@ -104,10 +112,10 @@ $res_lista = mysqli_query($conexion, $query_lista);
                 <p data-key="stat_active">Proyectos Activos</p>
                 <h3><?php echo $total_activos; ?></h3> 
             </div>
-            <div class="stat-card">
+            <!--<div class="stat-card">
                 <p data-key="stat_proposals">Propuestas Enviadas</p>
                 <h3><?php echo $total_propuestas; ?></h3> 
-            </div>
+            </div>-->
             <div class="stat-card">
                 <p data-key="stat_rating">Valoración</p>
                 <h3><?php echo ($valoracion_display == 'Nuevo') ? '<span data-key="rating_new">Nuevo</span>' : $valoracion_display; ?></h3>
@@ -145,12 +153,12 @@ $res_lista = mysqli_query($conexion, $query_lista);
                             </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <tr>
+                            <!--<tr>
                                 <td colspan="5" class="text-center" style="padding:20px;">
                                     <span data-key="empty_projects">No tienes proyectos activos actualmente.</span><br>
                                     <a href="solicitudes.php" style="color: var(--primary-color);" data-key="search_link">¡Busca proyectos aquí!</a>
                                 </td>
-                            </tr>
+                            </tr>-->
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -180,7 +188,7 @@ $res_lista = mysqli_query($conexion, $query_lista);
             'view_history': 'Ver historial anual →', 'title_current': 'Trabajos en curso',
             'th_project': 'Proyecto', 'th_client': 'Cliente', 'th_date': 'Fecha Inicio',
             'th_status': 'Estado', 'th_action': 'Acción', 'pill_progress': 'En curso',
-            'btn_manage': 'Gestionar', 'empty_projects': 'No tienes proyectos activos actualmente.',
+            'btn_manage': 'Detalles', 'empty_projects': 'No tienes proyectos activos actualmente.',
             'search_link': '¡Busca proyectos aquí!', 'footer_role': 'Area autónomo',
             'mode_dark': 'Modo Oscuro', 'mode_light': 'Modo Claro'
         },

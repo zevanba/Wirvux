@@ -176,50 +176,8 @@ if (empty($trabajo['id_autonomo'])) {
             <?php endif; ?>
         </div>
 
-        <section class="seccion-listado">
-            <h3 data-key="title_proposals">Propuestas Recibidas</h3>
-            
-            <?php if($trabajo['estado'] !== 'abierto'): ?>
-                <div class="aviso-info">
-                    <span data-key="msg_project_was">El proyecto fue</span> <strong><span data-key="pill_<?php echo $trabajo['estado']; ?>"><?php echo str_replace('_', ' ', $trabajo['estado']); ?></span></strong>.
-                </div>
-            <?php elseif($res_propuestas && mysqli_num_rows($res_propuestas) > 0): ?>
-                <?php while($prop = mysqli_fetch_assoc($res_propuestas)): ?>
-                    <div class="tarjeta-propuesta">
-                        <div class="propuesta-texto">
-                            <h4><?php echo htmlspecialchars($prop['tecnico_nombre']); ?></h4>
-                            <p><?php echo htmlspecialchars($prop['mensaje'] ?? 'Sin mensaje.'); ?></p>
-                            <small><?php echo $existe_fecha ? date('d/m/Y H:i', strtotime($prop['fecha_postulacion'])) : 'Recién recibida'; ?></small>
-                        </div>
-                        <div class="propuesta-acciones">
-                            <a href="mensajes.php?con=<?php echo $prop['id_autonomo']; ?>" class="btn-chat" data-key="btn_chat">Chatear</a>
-                            <a href="aceptar_propuesta.php?id=<?php echo $prop['id']; ?>&trabajo=<?php echo $id_trabajo; ?>" class="btn-aceptar" data-key="btn_accept">Aceptar</a>
-                        </div>
-                    </div>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <p class="vacio-texto" data-key="empty_proposals">No hay propuestas para este proyecto todavía.</p>
-            <?php endif; ?>
-        </section>
-
-        <?php if (empty($trabajo['id_autonomo'])): ?>
-            <section class="seccion-otros">
-                <h3><span data-key="title_suggested">Expertos sugeridos en</span> <?php echo htmlspecialchars($categoria_actual); ?></h3>
-                <div class="otros-grid">
-                    <?php if($res_otros && mysqli_num_rows($res_otros) > 0): ?>
-                        <?php while($otro = mysqli_fetch_assoc($res_otros)): ?>
-                            <div class="tarjeta-sugerido">
-                                <strong><?php echo htmlspecialchars($otro['nombre']); ?></strong>
-                                <span><span data-key="label_specialist">Especialista en</span> <?php echo htmlspecialchars($otro['especialidad']); ?></span>
-                                <a href="mensajes.php?con=<?php echo $otro['id']; ?>" class="btn-contacto" data-key="btn_contact">Contactar</a>
-                            </div>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <p class="vacio-texto" data-key="empty_others">No hay más autónomos registrados en esta categoría.</p>
-                    <?php endif; ?>
-                </div>
-            </section>
-        <?php endif; ?>
+       
+        
 
     </div>
     
