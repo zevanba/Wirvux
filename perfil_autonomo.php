@@ -13,6 +13,12 @@ include 'db.php';
 // Identificamos al profesional que se está visitando
 $id_autonomo = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
+
+$mi_id_sesion = isset($_SESSION['usuario_id']) ? intval($_SESSION['usuario_id']) : 0;
+$es_mi_propio_perfil = ($id_autonomo === $mi_id_sesion);
+
+
+
 // MANTENEMOS tipo_usuario para la base de datos ya que así te funcionaba la carga del perfil
 $query = "SELECT * FROM usuarios WHERE id = $id_autonomo AND tipo_usuario = 'autonomo'";
 $res = mysqli_query($conexion, $query);
@@ -356,9 +362,31 @@ if (isset($_SESSION['usuario_id']) && isset($_SESSION['tipo']) && $_SESSION['tip
 
                 <?php endif; ?>
 
-                <a href="mensajes.php?con=<?php echo $aut['id']; ?>" class="btn-contactar">
-                    <i class="fas fa-comment-dots"></i> Iniciar Conversación
-                </a>
+                <?php if (!$es_mi_propio_perfil): ?>
+                    <a href="mensajes.php?con=<?php echo $aut['id']; ?>" class="btn-contactar">
+                        <i class="fas fa-comment-dots"></i> Iniciar Conversación
+                    </a>
+                <?php endif; ?>
+
+                <?php if (isset($_SESSION['usuario_id']) && isset($_SESSION['tipo'])): ?>
+    <?php if ($_SESSION['tipo'] === 'autonomo'): ?>
+        <!-- Botón para el Autónomo -->
+        <a href="area_autonomo.php" class="btn-ir-listado" style="border-color: #6c757d; color: #6c757d;">
+            <i class="fas fa-columns"></i> Volver a mi Panel
+        </a>
+    <?php elseif ($_SESSION['tipo'] === 'cliente'): ?>
+        <!-- Botón para el Cliente -->
+        <a href="area_cliente.php" class="btn-ir-listado">
+            <i class="fas fa-user-tie"></i> Ir a mi Panel
+        </a>
+    <?php endif; ?>
+<?php endif; ?>
+
+<?php if ($es_mi_propio_perfil): ?>
+    <button onclick="abrirModalEdicion()" class="btn-proponer" style="background: var(--text-dark);">
+        <i class="fas fa-user-edit"></i> Editar mi Perfil
+    </button>
+<?php endif; ?>
                 
                 <a href="profesionales.php" class="back-link">
                     <i class="fas fa-arrow-left"></i> Explorar otros expertos
@@ -366,6 +394,11 @@ if (isset($_SESSION['usuario_id']) && isset($_SESSION['tipo']) && $_SESSION['tip
             </div>
         </div>
     </div>
+
+
+    
+
+
 
     <script>
     function toggleProyectos() {
@@ -409,6 +442,25 @@ window.onclick = function(event) {
         cerrarModal();
     }
 }
+
+
+function abrirModalEdicion() {
+    document.getElementById('modalEdicion').style.display = "block";
+}
+
+function cerrarModalEdicion() {
+    document.getElementById('modalEdicion').style.display = "none";
+}
+
+// Cerrar si se hace clic fuera del modal
+window.addEventListener('click', function(event) {
+    var modalEdicion = document.getElementById('modalEdicion');
+    if (event.target == modalEdicion) {
+        cerrarModalEdicion();
+    }
+});
+
+
     </script>
 
 
@@ -453,6 +505,35 @@ window.onclick = function(event) {
         <i class="fas fa-check-circle"></i> ¡Propuesta enviada con éxito! El profesional ha recibido un mensaje con los detalles.
     </div>
 <?php endif; ?>
+
+
+<!-- MODAL DE EDICIÓN DE PERFIL -->
+<div id="modalEdicion" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter: blur(4px);">
+    <div style="background:#fff; margin:5% auto; padding:30px; border-radius:20px; width:90%; max-width:500px; box-shadow: 0 15px 40px rgba(0,0,0,0.3);">
+        <h2 style="margin-top:0; color:#333;">Editar Perfil Profesional</h2>
+        
+        <form action="actualizar_perfil.php" method="POST" enctype="multipart/form-data">
+            <!-- Foto actual y nueva -->
+            <div style="margin-bottom:20px; text-align:center;">
+                <label style="display:block; margin-bottom:10px; font-weight:600;">Foto de Perfil:</label>
+                <input type="file" name="nueva_foto" accept="image/*" style="font-size:0.9rem;">
+            </div>
+
+            <!-- Presentación / Descripción -->
+            <div style="margin-bottom:20px;">
+                <label style="display:block; margin-bottom:8px; font-weight:600;">Presentación Profesional:</label>
+                <textarea name="nueva_descripcion" rows="8" 
+                          style="width:100%; border:1px solid #ddd; border-radius:12px; padding:12px; box-sizing:border-box; resize:none;"
+                          placeholder="Escribe aquí tu nueva descripción..."><?php echo htmlspecialchars($aut['descripcion'] ?? ''); ?></textarea>
+            </div>
+
+            <div style="display:flex; gap:12px;">
+                <button type="submit" style="flex:2; background:var(--success); color:white; border:none; padding:14px; border-radius:10px; font-weight:bold; cursor:pointer;">Guardar Cambios</button>
+                <button type="button" onclick="cerrarModalEdicion()" style="flex:1; background:#eee; color:#333; border:none; padding:14px; border-radius:10px; font-weight:bold; cursor:pointer;">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 
 </body>
