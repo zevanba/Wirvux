@@ -1,4 +1,4 @@
-<img width="1024" height="1024" alt="image" src="blob:https://gemini.google.com/141bc33f-31a8-4efd-a35a-4f77dca7ba1d" />
+<img width="1024" height="1024" alt="image" src="logo.jpeg" />
 
 <br>
 
