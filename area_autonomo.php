@@ -38,17 +38,56 @@ if ($total_votos == 0) {
     $subtexto_voto = "($total_votos reseñas)";
 }
 
-// 5. INGRESOS REALES
+// 5. INGRESOS REALES (Ajustados dinámicamente según comisiones reales de Stripe)
 $mes_actual = date('m');
 $anio_actual = date('Y');
-$query_ingresos = "SELECT SUM(presupuesto) as total_mes FROM trabajos 
+
+// Modificamos la query para obtener el listado de presupuestos de los trabajos completados este mes
+$query_ingresos = "SELECT presupuesto FROM trabajos 
                    WHERE id_autonomo = $id_usuario 
                    AND estado = 'completado' 
                    AND MONTH(fecha_creacion) = '$mes_actual' 
                    AND YEAR(fecha_creacion) = '$anio_actual'";
 $res_ingresos = mysqli_query($conexion, $query_ingresos);
-$datos_ingresos = mysqli_fetch_assoc($res_ingresos);
-$ingresos_mes = ($datos_ingresos['total_mes']) ? $datos_ingresos['total_mes'] : 0;
+
+// Inicializamos las variables acumuladoras en 0
+$ingresos_mes = 0;
+$comision_stripe_total = 0;
+$comision_wirvux_total = 0;
+
+while ($trabajo = mysqli_fetch_assoc($res_ingresos)) {
+    $presupuesto_proyecto = floatval($trabajo['presupuesto']);
+    
+    // A. El 20% teórico que se retendría en un escenario normal
+    $comision_proyecto_total = $presupuesto_proyecto * 0.20;
+    
+    // B. Tarifa real de Stripe Europa: 1.5% + 0.25€
+    // Calculamos en céntimos primero y usamos ceil() para redondear hacia arriba el céntimo como hace Stripe
+    $stripe_en_centimos = ($presupuesto_proyecto * 100 * 0.015) + 25;
+    $stripe_proyecto = ceil($stripe_en_centimos) / 100; // Lo devolvemos a euros (Ej: 26.5 céntimos pasa a 27 céntimos = 0.27€)
+    
+    $comision_stripe_total += $stripe_proyecto;
+    
+    // C. Lo que le quedaría limpio a Wirvux (El 20% menos el coste estricto de Stripe)
+    $wirvux_proyecto_limpio = $comision_proyecto_total - $stripe_proyecto;
+    
+    // CORRECCIÓN MATEMÁTICA PARA PROYECTOS ULTRA BAJOS
+    if ($wirvux_proyecto_limpio < 0) {
+        $wirvux_proyecto_limpio = 0;
+        // Ahora sí, 1.00 - 0.27 dará 0.73€ exactos sin fluctuaciones de decimales
+        $ingresos_netos_proyecto = $presupuesto_proyecto - $stripe_proyecto;
+    } else {
+        $ingresos_netos_proyecto = $presupuesto_proyecto * 0.80;
+    }
+    
+    $ingresos_mes += $ingresos_netos_proyecto;
+    $comision_wirvux_total += $wirvux_proyecto_limpio;
+}
+
+// Renombramos las variables finales para mantener la coherencia con tu código de las vistas
+$comision_stripe = $comision_stripe_total;
+$comision_wirvux_limpia = $comision_total_plataforma = $comision_wirvux_total;
+
 
 // 6. Lista de trabajos en curso
 $query_lista = "SELECT t.*, u.nombre as cliente_nombre 
@@ -90,19 +129,34 @@ $res_lista = mysqli_query($conexion, $query_lista);
                     <span id="theme-icon">🌙</span> <span id="theme-text">Modo Oscuro</span>
                 </button>
 
-                <!-- Botón Buscar Trabajos -->
                 <a href="solicitudes.php" class="btn-chats">
                     <i class="fas fa-search"></i> <span data-key="nav_search">Buscar Trabajos</span>
                 </a>
 
-                <!-- Botón Mis Mensajes -->
                 <a href="mensajes.php" class="btn-chats">
                     <i class="fas fa-envelope"></i> <span data-key="nav_messages">Mis Mensajes</span>
                 </a>
 
-                <!-- Botón Mi Perfil -->
                 <a href="perfil_autonomo.php?id=<?php echo $_SESSION['usuario_id']; ?>" class="btn-chats">
                     <i class="fas fa-user"></i> <span data-key="nav_profile">Mi perfil</span>
+                </a>
+
+                <a href="retirar_fondos.php" data-key="nav_withdraw" style="
+                    display: inline-block; 
+                    background-color: #635bff; 
+                    color: white; 
+                    text-decoration: none; 
+                    padding: 6px 12px; 
+                    border-radius: 4px; 
+                    font-size: 0.78em; 
+                    font-weight: bold; 
+                    line-height: 1;
+                    transition: background 0.2s;
+                    vertical-align: middle;
+                    margin-left: 8px;"
+                    onmouseover="this.style.backgroundColor='#4b43d3'" 
+                    onmouseout="this.style.backgroundColor='#635bff'">
+                    Retirar
                 </a>
                 
                 <a href="logout.php" class="btn-logout" data-key="nav_logout" onclick="resetConfig()">Cerrar Sesión</a>
@@ -119,15 +173,6 @@ $res_lista = mysqli_query($conexion, $query_lista);
                 <p data-key="stat_active">Proyectos Activos</p>
                 <h3><?php echo $total_activos; ?></h3> 
             </div>
-            <!--<div class="stat-card">
-                <p data-key="stat_proposals">Propuestas Enviadas</p>
-                <h3><?php echo $total_propuestas; ?></h3> 
-            </div>-->
-            <!--<div class="stat-card">
-                <p data-key="stat_rating">Valoración</p>
-                <h3><?php echo ($valoracion_display == 'Nuevo') ? '<span data-key="rating_new">Nuevo</span>' : $valoracion_display; ?></h3>
-                <p style="font-size: 0.7em; color: var(--primary-color);"><?php echo $subtexto_voto; ?></p>
-            </div>-->
             <div class="stat-card">
                 <p data-key="stat_income">Ingresos Mes</p>
                 <h3><?php echo number_format($ingresos_mes, 2); ?> €</h3>
@@ -160,12 +205,6 @@ $res_lista = mysqli_query($conexion, $query_lista);
                             </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <!--<tr>
-                                <td colspan="5" class="text-center" style="padding:20px;">
-                                    <span data-key="empty_projects">No tienes proyectos activos actualmente.</span><br>
-                                    <a href="solicitudes.php" style="color: var(--primary-color);" data-key="search_link">¡Busca proyectos aquí!</a>
-                                </td>
-                            </tr>-->
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -188,7 +227,7 @@ $res_lista = mysqli_query($conexion, $query_lista);
     const translations = {
     'es': {
         'nav_role': 'PANEL', 'nav_start': 'Inicio', 'nav_logout': 'Cerrar Sesión','nav_search': 'Buscar Trabajos',
-        'nav_messages': 'Mis Mensajes', 'nav_profile': 'Mi perfil', // <-- Añadidos
+        'nav_messages': 'Mis Mensajes', 'nav_profile': 'Mi perfil', 'nav_withdraw': 'Retirar',
         'welcome': 'Hola', 'subtitle': 'Esta es tu actividad y proyectos de este mes.',
         'specialist': 'Especialista en', 'stat_active': 'Proyectos Activos',
         'stat_proposals': 'Propuestas Enviadas', 'stat_rating': 'Valoración',
@@ -202,7 +241,7 @@ $res_lista = mysqli_query($conexion, $query_lista);
     },
     'en': {
         'nav_role': 'DASHBOARD', 'nav_start': 'Home', 'nav_logout': 'Logout','nav_search': 'Find Jobs',
-        'nav_messages': 'My Messages', 'nav_profile': 'My Profile', // <-- Añadidos
+        'nav_messages': 'My Messages', 'nav_profile': 'My Profile', 'nav_withdraw': 'Withdraw',
         'welcome': 'Hello', 'subtitle': 'This is your activity and projects for this month.',
         'specialist': 'Specialist in', 'stat_active': 'Active Projects',
         'stat_proposals': 'Sent Proposals', 'stat_rating': 'Rating',
@@ -259,7 +298,7 @@ $res_lista = mysqli_query($conexion, $query_lista);
 
     function updateThemeButtonText() {
         const isDark = document.body.classList.contains('dark-mode');
-        const lang = sessionStorage.getItem('lang') || 'es'; // CORREGIDO: Leer de session
+        const lang = sessionStorage.getItem('lang') || 'es'; // Leer de sesión
         themeIcon.innerText = isDark ? '☀️' : '🌙';
         themeText.innerText = isDark ? translations[lang]['mode_light'] : translations[lang]['mode_dark'];
     }
@@ -272,7 +311,7 @@ $res_lista = mysqli_query($conexion, $query_lista);
         updateThemeButtonText();
     });
 
-    // --- INICIALIZACIÓN (LA CLAVE DEL PROBLEMA) ---
+    // --- INICIALIZACIÓN ---
     // 1. Mirar la mochila de sesión primero
     const savedLang = sessionStorage.getItem('lang') || 'es';
     const savedTheme = sessionStorage.getItem('theme') || 'light';

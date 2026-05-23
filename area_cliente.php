@@ -41,40 +41,72 @@ $res_recientes = mysqli_query($conexion, $query_recientes);
     <link rel="stylesheet" href="estilos.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>Panel Cliente | Wirvux</title>
+
+    <style>
+
+    /* Contenedor principal de los links */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Reducimos un poco el espacio para que quepa todo */
+    flex-wrap: nowrap; /* Impide que los elementos bajen de línea */
+}
+
+/* Evita que los textos de los enlaces se dividan en dos */
+.nav-links a, 
+.theme-switch, 
+.btn-logout {
+    white-space: nowrap; 
+    display: flex;
+    align-items: center;
+}
+
+/* Ajuste específico para el logo para que no se comprima */
+.nav-container h1 {
+    white-space: nowrap;
+    margin-right: 20px;
+    flex-shrink: 0; /* Evita que el logo se haga pequeño */
+}
+
+
+
+    </style>
 </head>
 <body>
 
     <nav>
-        <div class="nav-container">
-            <h1>WIRVUX <span data-key="nav_role">CLIENTE</span></h1>
-            <div class="nav-links">
-                <a href="index.php" data-key="nav_start">Inicio</a>
-                <a href="mis_pagos.php" data-key="nav_payments">Mis Gastos</a>
-                <a href="mensajes.php" data-key="nav_chats">Mis Chats</a>
-                <!-- AJUSTE AQUÍ: Añadido data-key y span para el texto -->
-                <a href="profesionales.php" class="btn-primary">
-                    <i class="fas fa-search"></i> <span data-key="nav_search">Buscar Profesionales</span>
-                </a>
-                
-                <div class="lang-dropdown">
-                    <button id="lang-toggle" class="theme-switch">
-                        <span id="lang-icon">🇪🇸</span> <span id="lang-text">ES</span>
-                        <i class="fas fa-chevron-down" style="font-size: 0.7rem; margin-left: 5px;"></i>
-                    </button>
-                    <div class="dropdown-content" id="lang-menu">
-                        <a href="#" data-lang="es">🇪🇸 Español</a>
-                        <a href="#" data-lang="en">🇺🇸 English</a>
-                    </div>
-                </div>
-
-                <button id="theme-toggle" class="theme-switch">
-                    <span id="theme-icon">🌙</span> <span id="theme-text">Modo Oscuro</span>
+    <div class="nav-container">
+        <h1>WIRVUX <span data-key="nav_role">CLIENTE</span></h1>
+        <div class="nav-links">
+            <a href="index.php" data-key="nav_start">Inicio</a>
+            <a href="mis_pagos.php" data-key="nav_payments">Mis Gastos</a>
+            <a href="mensajes.php" data-key="nav_chats">Mis Chats</a>
+            
+            <a href="profesionales.php" class="btn-primary">
+                <i class="fas fa-search"></i> <span data-key="nav_search">Buscar Profesionales</span>
+            </a>
+            
+            <div class="lang-dropdown">
+                <button id="lang-toggle" class="theme-switch">
+                    <span id="lang-icon">🇪🇸</span> <span id="lang-text">ES</span>
+                    <i class="fas fa-chevron-down" style="font-size: 0.7rem; margin-left: 5px;"></i>
                 </button>
-                
-                <a href="logout.php" class="btn-logout" data-key="nav_logout" onclick="resetConfig()">Cerrar Sesión</a>
+                <div class="dropdown-content" id="lang-menu">
+                    <a href="#" data-lang="es">🇪🇸 Español</a>
+                    <a href="#" data-lang="en">🇺🇸 English</a>
+                </div>
             </div>
+
+            <button id="theme-toggle" class="theme-switch">
+                <span id="theme-icon">🌙</span> <span id="theme-text">Modo Oscuro</span>
+            </button>
+
+            
+
+            <a href="logout.php" class="btn-logout" data-key="nav_logout" onclick="resetConfig()">Cerrar Sesión</a>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <div class="dashboard-container">
         

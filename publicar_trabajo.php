@@ -66,39 +66,48 @@ if (isset($_POST['publicar'])) {
                 </div>
 
                 <div class="campo-grupo">
-                    <label data-key="label_cat">Categoría</label>
-                    <select name="categoria" id="select_cat" required>
-                        <option value="" data-key="opt_default">-- Selecciona una categoría --</option>
-                        <option value="Desarrollo Web" data-key="opt_web_dev">Desarrollo Web</option>
-                        <option value="Desarrollo multiplataforma" data-key="opt_multi_dev">Desarrollo multiplataforma</option>
-                        <option value="Ciberseguridad" data-key="opt_cybersecurity">Ciberseguridad</option>
-                        <option value="Soporte Técnico" data-key="opt_tech_support">Soporte Técnico</option>
-                        <option value="IA y Datos" data-key="opt_ai_data">IA y Datos</option>
-                        <option value="Sistemas" data-key="opt_systems">Sistemas</option>
+    <label data-key="label_cat">Categoría</label>
+    <select name="categoria" id="select_cat" required>
+        <option value="" data-key="opt_default">-- Selecciona una categoría --</option>
 
-                        <option value="Diseño Gráfico" data-key="opt_graphic_design">Diseño Gráfico</option>
-                        <option value="UI/UX" data-key="opt_ui_ux">UI/UX</option>
-                        <option value="Edición de Vídeo" data-key="opt_video_edit">Edición de Vídeo</option>
-                        <option value="Ilustración" data-key="opt_illustration">Ilustración</option>
-                        <option value="Fotografía" data-key="opt_photography">Fotografía</option>
+        <optgroup label="Tecnología" data-key="group_tech">
+            <option value="Desarrollo Web" data-key="opt_web_dev">Desarrollo Web</option>
+            <option value="Desarrollo multiplataforma" data-key="opt_multi_dev">Desarrollo multiplataforma</option>
+            <option value="Ciberseguridad" data-key="opt_cybersecurity">Ciberseguridad</option>
+            <option value="Soporte Técnico" data-key="opt_tech_support">Soporte Técnico</option>
+            <option value="IA y Datos" data-key="opt_ai_data">IA y Datos</option>
+            <option value="Sistemas" data-key="opt_systems">Sistemas</option>
+        </optgroup>
 
-                        <option value="SEO" data-key="opt_seo">SEO</option>
-                        <option value="Community Manager" data-key="opt_community_mgr">Community Manager</option>
-                        <option value="Copywriting" data-key="opt_copywriting">Copywriting</option>
-                        <option value="Publicidad (Ads)" data-key="opt_ads">Publicidad (Ads)</option>
-                        <option value="Traducción" data-key="opt_translation">Traducción</option>
+        <optgroup label="Diseño" data-key="group_design">
+            <option value="Diseño Gráfico" data-key="opt_graphic_design">Diseño Gráfico</option>
+            <option value="UI/UX" data-key="opt_ui_ux">UI/UX</option>
+            <option value="Edición de Vídeo" data-key="opt_video_edit">Edición de Vídeo</option>
+            <option value="Ilustración" data-key="opt_illustration">Ilustración</option>
+            <option value="Fotografía" data-key="opt_photography">Fotografía</option>
+        </optgroup>
 
-                        <option value="Asistente Virtual" data-key="opt_virtual_asst">Asistente Virtual</option>
-                        <option value="Contabilidad" data-key="opt_accounting">Contabilidad</option>
-                        <option value="Consultoría Legal" data-key="opt_legal_cons">Consultoría Legal</option>
-                        <option value="Recursos Humanos" data-key="opt_hr">Recursos Humanos</option>
-                    </select>
-                </div>
+        <optgroup label="Marketing y Comunicación" data-key="group_mkt">
+            <option value="SEO" data-key="opt_seo">SEO</option>
+            <option value="Community Manager" data-key="opt_community_mgr">Community Manager</option>
+            <option value="Copywriting" data-key="opt_copywriting">Copywriting</option>
+            <option value="Publicidad (Ads)" data-key="opt_ads">Publicidad (Ads)</option>
+            <option value="Traducción" data-key="opt_translation">Traducción</option>
+        </optgroup>
+
+        <optgroup label="Administración y Negocios" data-key="group_admin">
+            <option value="Asistente Virtual" data-key="opt_virtual_asst">Asistente Virtual</option>
+            <option value="Contabilidad" data-key="opt_accounting">Contabilidad</option>
+            <option value="Consultoría Legal" data-key="opt_legal_cons">Consultoría Legal</option>
+            <option value="Recursos Humanos" data-key="opt_hr">Recursos Humanos</option>
+        </optgroup>
+    </select>
+</div>
 
                 <div class="campo-grupo">
-                    <label data-key="label_budget">Presupuesto máximo (€)</label>
-                    <input type="number" step="0.01" name="presupuesto" placeholder="0.00" required>
-                </div>
+    <label data-key="label_budget">Presupuesto (€)</label>
+    <input type="number" step="0.01" min="0.00" name="presupuesto" placeholder="0.00" required>
+</div>
 
                 <div class="campo-grupo">
                     <label data-key="label_desc">Descripción detallada</label>
@@ -130,7 +139,7 @@ if (isset($_POST['publicar'])) {
             'opt_config': 'Configuración',
             'opt_dev': 'Programación',
             'opt_admin': 'Administración',
-            'label_budget': 'Presupuesto máximo (€)',
+            'label_budget': 'Presupuesto (€)',
             'label_desc': 'Descripción detallada',
             'placeholder_desc': 'Explica qué necesitas con detalle...',
             'btn_submit': 'Publicar Proyecto',
@@ -152,7 +161,7 @@ if (isset($_POST['publicar'])) {
             'opt_config': 'Configuration',
             'opt_dev': 'Programming',
             'opt_admin': 'Administration',
-            'label_budget': 'Maximum budget (€)',
+            'label_budget': ' budget (€)',
             'label_desc': 'Detailed description',
             'placeholder_desc': 'Explain what you need in detail...',
             'btn_submit': 'Post Project',
