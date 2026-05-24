@@ -64,8 +64,8 @@ if (isset($_POST['registrar'])) {
                         <div style='padding: 30px; color: #333333; line-height: 1.6;'>
                             <h2 style='color: #1e1e1e;'>¡Hola, $nombre!</h2>
                             <p>Tu cuenta ha sido creada con éxito en <strong>Wirvux</strong>.</p>
-                            <p>Recuerde que en cada proyecto completado un 20% de el presupuesto del cliente sera para nosotros y el 80% restante sera para el autonomo.</p>
-                            <p>Nuestra pasarela de pagos (stripe) se llevara tanto al hacer sus pagos como cliente como en el retiro de nuestros autonomos.</p>
+                            <p>Nuestra pasarela de pagos (stripe) se llevara tanto al hacer sus pagos como cliente de un 1,5% + 0,25 y posteriormente nosotros nos llevaremos un 20%.</p>
+                            <p>Nuestra pasarela de pagos (stripe) tras cada pago del cliente tienen que pasar 2 dias habiles para estar disponible para su retiro</p>
                             <div style='text-align: center; margin: 30px 0;'>
                                 <a href='https://wirvux.ddns.net/login.php' style='background-color: #28a745; color: white; padding: 15px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;'>Acceder</a>
                             </div>

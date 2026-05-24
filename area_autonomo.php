@@ -38,9 +38,12 @@ if ($total_votos == 0) {
     $subtexto_voto = "($total_votos reseñas)";
 }
 
-// 5. INGRESOS REALES (Ajustados dinámicamente según comisiones reales de Stripe)
+// 5. INGRESOS REALES (Fijados estrictamente al campo saldo_disponible modificado por retirar_fondos.php)
 $mes_actual = date('m');
 $anio_actual = date('Y');
+
+// CORRECCIÓN AQUÍ: Leemos el saldo real del usuario de la BD. Ya no empieza en 0.
+$ingresos_mes = floatval($user['saldo_disponible']);
 
 // Modificamos la query para obtener el listado de presupuestos de los trabajos completados este mes
 $query_ingresos = "SELECT presupuesto FROM trabajos 
@@ -51,7 +54,6 @@ $query_ingresos = "SELECT presupuesto FROM trabajos
 $res_ingresos = mysqli_query($conexion, $query_ingresos);
 
 // Inicializamos las variables acumuladoras en 0
-$ingresos_mes = 0;
 $comision_stripe_total = 0;
 $comision_wirvux_total = 0;
 
@@ -62,9 +64,8 @@ while ($trabajo = mysqli_fetch_assoc($res_ingresos)) {
     $comision_proyecto_total = $presupuesto_proyecto * 0.20;
     
     // B. Tarifa real de Stripe Europa: 1.5% + 0.25€
-    // Calculamos en céntimos primero y usamos ceil() para redondear hacia arriba el céntimo como hace Stripe
     $stripe_en_centimos = ($presupuesto_proyecto * 100 * 0.015) + 25;
-    $stripe_proyecto = ceil($stripe_en_centimos) / 100; // Lo devolvemos a euros (Ej: 26.5 céntimos pasa a 27 céntimos = 0.27€)
+    $stripe_proyecto = ceil($stripe_en_centimos) / 100;
     
     $comision_stripe_total += $stripe_proyecto;
     
@@ -74,13 +75,9 @@ while ($trabajo = mysqli_fetch_assoc($res_ingresos)) {
     // CORRECCIÓN MATEMÁTICA PARA PROYECTOS ULTRA BAJOS
     if ($wirvux_proyecto_limpio < 0) {
         $wirvux_proyecto_limpio = 0;
-        // Ahora sí, 1.00 - 0.27 dará 0.73€ exactos sin fluctuaciones de decimales
-        $ingresos_netos_proyecto = $presupuesto_proyecto - $stripe_proyecto;
-    } else {
-        $ingresos_netos_proyecto = $presupuesto_proyecto * 0.80;
     }
     
-    $ingresos_mes += $ingresos_netos_proyecto;
+    // ELIMINADA LA LÍNEA QUE HACÍA LA SUMA DE $ingresos_mes AQUÍ DENTRO. El bucle solo calcula comisiones.
     $comision_wirvux_total += $wirvux_proyecto_limpio;
 }
 
@@ -217,10 +214,9 @@ $res_lista = mysqli_query($conexion, $query_lista);
     </footer>
 
    <script>
-    // Limpieza total al cerrar sesión
     function resetConfig() {
         sessionStorage.clear();
-        localStorage.clear(); // Por si acaso quedan restos antiguos
+        localStorage.clear();
     }
 
     /* --- CONFIGURACIÓN DE TRADUCCIONES --- */
@@ -283,7 +279,6 @@ $res_lista = mysqli_query($conexion, $query_lista);
         if(langIcon) langIcon.innerText = lang === 'es' ? '🇪🇸' : '🇺🇸';
         if(langTextValue) langTextValue.innerText = lang.toUpperCase();
         
-        // GUARDAR SIEMPRE EN SESSIONSTORAGE
         sessionStorage.setItem('lang', lang);
         updateThemeButtonText();
     }
@@ -298,7 +293,7 @@ $res_lista = mysqli_query($conexion, $query_lista);
 
     function updateThemeButtonText() {
         const isDark = document.body.classList.contains('dark-mode');
-        const lang = sessionStorage.getItem('lang') || 'es'; // Leer de sesión
+        const lang = sessionStorage.getItem('lang') || 'es';
         themeIcon.innerText = isDark ? '☀️' : '🌙';
         themeText.innerText = isDark ? translations[lang]['mode_light'] : translations[lang]['mode_dark'];
     }
@@ -306,24 +301,19 @@ $res_lista = mysqli_query($conexion, $query_lista);
     themeBtn.addEventListener('click', () => {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
-        // GUARDAR SIEMPRE EN SESSIONSTORAGE
         sessionStorage.setItem('theme', isDark ? 'dark' : 'light');
         updateThemeButtonText();
     });
 
-    // --- INICIALIZACIÓN ---
-    // 1. Mirar la mochila de sesión primero
     const savedLang = sessionStorage.getItem('lang') || 'es';
     const savedTheme = sessionStorage.getItem('theme') || 'light';
 
-    // 2. Aplicar tema
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-mode');
     } else {
         document.body.classList.remove('dark-mode');
     }
 
-    // 3. Aplicar idioma
     applyLanguage(savedLang);
 </script>
 </body>
