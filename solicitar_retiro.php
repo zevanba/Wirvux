@@ -16,7 +16,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo'] !== 'autonomo') {
 
 // Carga manual del SDK de Stripe
 require_once __DIR__ . '/stripe-php/init.php';
-\Stripe\Stripe::setApiKey('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');
+\Stripe\Stripe::setApiKey('la sk');
 
 $id_autonomo = $_SESSION['usuario_id'];
 $monto_bruto_retirar = floatval($_POST['monto']);
